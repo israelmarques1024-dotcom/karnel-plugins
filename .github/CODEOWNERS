@@ -1,0 +1,5 @@
+# Registry and schemas require maintainer review.
+* @israelmarques1024-dotcom
+/registry.json @israelmarques1024-dotcom
+/schemas/ @israelmarques1024-dotcom
+/.github/workflows/ @israelmarques1024-dotcom

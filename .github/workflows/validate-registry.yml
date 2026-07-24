@@ -1,0 +1,37 @@
+name: Validate Registry
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: registry-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Schema, source, manifest and commands
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: israelmarques1024-dotcom/karnel-termux
+          path: karnel-termux
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install static validation tools
+        run: sudo apt-get update && sudo apt-get install -y jq shellcheck
+      - name: Validate JSON files
+        run: jq empty registry.json schemas/*.json
+      - name: Validate approved registry entries
+        run: >-
+          python3 scripts/validate_registry.py --require-shellcheck
+          --local-repository israelmarques1024-dotcom/karnel-plugins
+          --native-commands-dir karnel-termux/karnel/cli/commands

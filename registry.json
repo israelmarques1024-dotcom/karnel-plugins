@@ -1,5 +1,21 @@
 {
-  "version": 1,
-  "description": "Official plugin registry for Karnel Termux",
-  "plugins": []
+  "schemaVersion": 1,
+  "description": "Official reviewed plugin registry for Karnel Termux.",
+  "plugins": [
+    {
+      "name": "karnel-hello",
+      "repo": "israelmarques1024-dotcom/karnel-plugins",
+      "ref": "main",
+      "path": "plugins/karnel-hello",
+      "version": "1.0.0",
+      "description": "Minimal official plugin used to validate the Karnel plugin flow.",
+      "commands": [
+        "karnel-hello"
+      ],
+      "minKarnelVersion": "4.11.6",
+      "license": "MIT",
+      "checksum": "sha256:7b50c4e164cf2020ac4e6c914b887a5ffc06351b0668b6ae3cf14d22bbfd0e15",
+      "capabilities": []
+    }
+  ]
 }
