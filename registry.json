@@ -12,7 +12,7 @@
       "commands": [
         "karnel-hello"
       ],
-      "minKarnelVersion": "4.11.6",
+      "minKarnelVersion": "4.13.0",
       "license": "MIT",
       "checksum": "sha256:7b50c4e164cf2020ac4e6c914b887a5ffc06351b0668b6ae3cf14d22bbfd0e15",
       "capabilities": []

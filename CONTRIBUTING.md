@@ -36,7 +36,7 @@ O `karnel-plugin.json` tem campos obrigatórios:
   "version": "1.0.0",
   "description": "Descrição curta e sem quebra de linha",
   "commands": ["meu-comando"],
-  "minKarnelVersion": "4.11.6",
+  "minKarnelVersion": "4.13.0",
   "license": "MIT",
   "checksum": "sha256:<hash-do-payload-do-plugin>",
   "capabilities": []
@@ -50,7 +50,9 @@ honesta do que o código pretende usar; não representam uma sandbox. Consulte o
 Ao alterar scripts em `commands/`:
 
 1. Atualize `version` seguindo SemVer.
-2. Recalcule `checksum` conforme o algoritmo de payload completo no README.
+2. Recalcule `checksum` conforme o algoritmo de payload completo no README quando
+   o plugin for publicado no registry. O campo é recomendado, mas não obrigatório,
+   para plugins locais ou instalados com `--unsafe`.
 3. Atualize a entrada correspondente em `registry.json`.
 4. Execute `bash -n commands/*.sh` e ShellCheck.
 
@@ -72,7 +74,7 @@ Exemplo:
   "version": "1.0.0",
   "description": "Descrição curta e sem quebra de linha",
   "commands": ["meu-comando"],
-  "minKarnelVersion": "4.11.6",
+  "minKarnelVersion": "4.13.0",
   "license": "MIT",
   "checksum": "sha256:<hash-do-payload-do-plugin>",
   "capabilities": []

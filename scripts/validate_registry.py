@@ -15,6 +15,9 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+from jsonschema import Draft202012Validator
+from jsonschema.exceptions import SchemaError
+
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY_PATH = ROOT / "registry.json"
@@ -66,10 +69,18 @@ ENTRY_ALLOWED = ENTRY_REQUIRED | {"commit", "path", "capabilities"}
 
 
 class Validator:
-    def __init__(self, require_shellcheck: bool, native_commands: set[str]) -> None:
+    def __init__(
+        self,
+        require_shellcheck: bool,
+        native_commands: set[str],
+        registry_schema: dict[str, Any] | None,
+        manifest_schema: dict[str, Any] | None,
+    ) -> None:
         self.errors: list[str] = []
         self.require_shellcheck = require_shellcheck
         self.native_commands = native_commands
+        self.registry_schema = registry_schema
+        self.manifest_schema = manifest_schema
 
     def fail(self, message: str) -> None:
         self.errors.append(message)
@@ -81,6 +92,26 @@ class Validator:
         except (OSError, json.JSONDecodeError) as error:
             self.fail(f"{path}: invalid JSON: {error}")
             return None
+
+    def validate_schema(self, instance: Any, schema: dict[str, Any] | None, label: str) -> None:
+        if schema is None:
+            self.fail(f"{label}: schema is unavailable")
+            return
+        try:
+            validator = Draft202012Validator(schema)
+            errors = sorted(validator.iter_errors(instance), key=lambda error: list(error.absolute_path))
+        except SchemaError as error:
+            self.fail(f"{label}: invalid JSON Schema: {error.message}")
+            return
+        for error in errors:
+            location = ".".join(str(part) for part in error.absolute_path)
+            self.fail(f"{label}{'.' + location if location else ''}: schema validation failed: {error.message}")
+
+    def validate_schema_definition(self, schema: dict[str, Any], label: str) -> None:
+        try:
+            Draft202012Validator.check_schema(schema)
+        except SchemaError as error:
+            self.fail(f"{label}: invalid JSON Schema: {error.message}")
 
     def require_regular_file(self, root: Path, path: Path, label: str) -> bool:
         if path.is_symlink() or not path.is_file():
@@ -182,6 +213,7 @@ class Validator:
         if not isinstance(manifest, dict):
             self.fail(f"{label}: manifest must be a JSON object")
             return
+        self.validate_schema(manifest, self.manifest_schema, label)
 
         unknown = set(manifest) - MANIFEST_ALLOWED
         missing = MANIFEST_REQUIRED - set(manifest)
@@ -333,6 +365,7 @@ class Validator:
         return entry if len(self.errors) == error_count else None
 
     def validate_registry(self, registry: Any) -> list[dict[str, Any]]:
+        self.validate_schema(registry, self.registry_schema, "registry")
         if not isinstance(registry, dict):
             self.fail("registry: root must be an object")
             return []
@@ -429,9 +462,23 @@ def main() -> int:
             if path.is_file() and not path.is_symlink()
         }
 
-    validator = Validator(require_shellcheck=arguments.require_shellcheck, native_commands=native_commands)
-    for schema_path in SCHEMA_PATHS:
-        validator.load_json(schema_path)
+    schema_loader = Validator(False, set(), None, None)
+    loaded_schemas = [schema_loader.load_json(path) for path in SCHEMA_PATHS]
+    registry_schema, manifest_schema = (
+        schema if isinstance(schema, dict) else None for schema in loaded_schemas
+    )
+    validator = Validator(
+        require_shellcheck=arguments.require_shellcheck,
+        native_commands=native_commands,
+        registry_schema=registry_schema,
+        manifest_schema=manifest_schema,
+    )
+    validator.errors.extend(schema_loader.errors)
+    for schema_path, schema in zip(SCHEMA_PATHS, loaded_schemas):
+        if not isinstance(schema, dict):
+            validator.fail(f"{schema_path}: schema must be a JSON object")
+        else:
+            validator.validate_schema_definition(schema, str(schema_path))
     registry = validator.load_json(REGISTRY_PATH)
     entries = validator.validate_registry(registry) if registry is not None else []
     if not arguments.offline:

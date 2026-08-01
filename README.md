@@ -73,7 +73,7 @@ meu-plugin/
   "version": "1.0.0",
   "description": "Descrição curta e sem quebra de linha",
   "commands": ["meu-comando"],
-  "minKarnelVersion": "4.11.6",
+  "minKarnelVersion": "4.13.0",
   "license": "MIT",
   "checksum": "sha256:<hash-do-payload-do-plugin>",
   "capabilities": ["network"]
@@ -85,7 +85,9 @@ meu-plugin/
 declarar `meu-comando_main()` com `{` na mesma linha. Symlinks não são aceitos
 em nenhum arquivo do payload.
 
-O checksum é SHA-256 do payload completo do plugin: cada arquivo regular, exceto
+O checksum é obrigatório para entradas aprovadas no registry e recomendado para
+plugins locais ou instalados com `--unsafe`. Ele é SHA-256 do payload completo do
+plugin: cada arquivo regular, exceto
 `karnel-plugin.json`, `.karnel-install.json` e `.git/`, entra em ordem
 lexicográfica como `caminho-relativo\0<sha256-do-arquivo>\0`. Isso protege
 comandos, helpers, executáveis e licença que o registry aprovou. Ao alterar

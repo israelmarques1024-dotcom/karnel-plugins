@@ -27,7 +27,7 @@ jobs:
         with:
           python-version: "3.12"
       - name: Install static validation tools
-        run: sudo apt-get update && sudo apt-get install -y jq shellcheck
+        run: sudo apt-get update && sudo apt-get install -y jq python3-jsonschema shellcheck
       - name: Validate JSON files
         run: jq empty registry.json schemas/*.json
       - name: Validate approved registry entries
