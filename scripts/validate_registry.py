@@ -285,9 +285,12 @@ class Validator:
             self.run_static_checks(command_path, command)
 
         actual_files: set[str] = set()
-        for path in commands_dir.glob("*.sh"):
+        for path in commands_dir.iterdir():
             if path.is_symlink() or not path.is_file():
                 self.fail(f"{path}: command entry must be a regular file")
+                continue
+            if path.suffix != ".sh":
+                self.fail(f"{path}: command entry must use the .sh extension")
                 continue
             actual_files.add(path.stem)
         unexpected = actual_files - set(commands)
@@ -343,7 +346,7 @@ class Validator:
         if not isinstance(repo, str) or not REPO_RE.fullmatch(repo) or ".." in repo or repo.endswith(".git"):
             self.fail(f"{label}: repo must be exactly owner/repo")
         ref = entry["ref"]
-        if not isinstance(ref, str) or not REF_RE.fullmatch(ref) or ".." in ref or "//" in ref or ref.endswith("/"):
+        if not isinstance(ref, str) or not REF_RE.fullmatch(ref) or ".." in ref or "//" in ref or ref.endswith("/") or ref.endswith(".lock"):
             self.fail(f"{label}: ref is invalid")
         if "path" in entry:
             path = entry["path"]

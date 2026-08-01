@@ -27,7 +27,7 @@ mesma linha. Nomes de plugin e comando precisam seguir
 
 ## Atualizar o Manifesto
 
-O `karnel-plugin.json` tem campos obrigatórios:
+O `karnel-plugin.json` tem estes campos obrigatórios:
 
 ```json
 {
@@ -38,7 +38,6 @@ O `karnel-plugin.json` tem campos obrigatórios:
   "commands": ["meu-comando"],
   "minKarnelVersion": "4.13.0",
   "license": "MIT",
-  "checksum": "sha256:<hash-do-payload-do-plugin>",
   "capabilities": []
 }
 ```
@@ -50,9 +49,9 @@ honesta do que o código pretende usar; não representam uma sandbox. Consulte o
 Ao alterar scripts em `commands/`:
 
 1. Atualize `version` seguindo SemVer.
-2. Recalcule `checksum` conforme o algoritmo de payload completo no README quando
-   o plugin for publicado no registry. O campo é recomendado, mas não obrigatório,
-   para plugins locais ou instalados com `--unsafe`.
+2. Adicione e recalcule `checksum` conforme o algoritmo de payload completo no
+   README quando o plugin for publicado no registry. O campo é opcional para
+   plugins locais ou instalados com `--unsafe`.
 3. Atualize a entrada correspondente em `registry.json`.
 4. Execute `bash -n commands/*.sh` e ShellCheck.
 
