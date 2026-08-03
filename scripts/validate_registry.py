@@ -350,7 +350,14 @@ class Validator:
             self.fail(f"{label}: ref is invalid")
         if "path" in entry:
             path = entry["path"]
-            if not isinstance(path, str) or not PATH_RE.fullmatch(path) or ".." in path or "//" in path or path.endswith("/") or path.startswith(".git"):
+            if path != "." and (
+                not isinstance(path, str)
+                or not PATH_RE.fullmatch(path)
+                or ".." in path
+                or "//" in path
+                or path.endswith("/")
+                or path.startswith(".git")
+            ):
                 self.fail(f"{label}: path is invalid")
         if "commit" in entry and (not isinstance(entry["commit"], str) or not re.fullmatch(r"[0-9a-f]{40}", entry["commit"])):
             self.fail(f"{label}: commit must be a full lowercase SHA-1")
@@ -434,6 +441,9 @@ class Validator:
             self.validate_manifest(plugin_dir, entry)
 
     def validate_local_entry(self, entry: dict[str, Any]) -> None:
+        if entry["ref"] != "main":
+            self.fail(f"{entry['name']}: local repository validation requires ref main")
+            return
         plugin_dir = ROOT / entry.get("path", ".")
         if not self.require_inside(ROOT, plugin_dir, f"{entry['name']}: local plugin path"):
             return
