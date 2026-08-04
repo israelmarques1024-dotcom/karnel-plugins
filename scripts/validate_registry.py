@@ -131,7 +131,7 @@ class Validator:
         if not isinstance(value, str) or not value or len(value) > 160:
             self.fail(f"{label}: description must be a non-empty string up to 160 characters")
             return False
-        if any(ord(character) < 32 or ord(character) == 127 for character in value):
+        if any(ord(character) < 32 or 127 <= ord(character) <= 159 for character in value):
             self.fail(f"{label}: description must be a single line")
             return False
         return True
@@ -189,7 +189,11 @@ class Validator:
         try:
             for path in sorted(files, key=lambda item: item.relative_to(plugin_dir).as_posix().encode()):
                 relative = path.relative_to(plugin_dir).as_posix().encode()
-                file_hash = hashlib.sha256(path.read_bytes()).hexdigest().encode()
+                file_digest = hashlib.sha256()
+                with path.open("rb") as payload:
+                    for chunk in iter(lambda: payload.read(1024 * 1024), b""):
+                        file_digest.update(chunk)
+                file_hash = file_digest.hexdigest().encode()
                 digest.update(relative)
                 digest.update(b"\0")
                 digest.update(file_hash)
@@ -246,7 +250,7 @@ class Validator:
             self.validate_command_files(plugin_dir, commands)
 
         license_path = plugin_dir / "LICENSE"
-        if not license_path.exists():
+        if not license_path.is_file() or license_path.is_symlink():
             license_path = plugin_dir / "LICENSE.md"
         self.require_regular_file(plugin_dir, license_path, f"{label}/LICENSE")
 
@@ -444,15 +448,12 @@ class Validator:
         if entry["ref"] != "main":
             self.fail(f"{entry['name']}: local repository validation requires ref main")
             return
+        if "commit" in entry:
+            self.fail(f"{entry['name']}: local repository entries on mutable ref main must not set commit")
+            return
         plugin_dir = ROOT / entry.get("path", ".")
         if not self.require_inside(ROOT, plugin_dir, f"{entry['name']}: local plugin path"):
             return
-        if "commit" in entry:
-            commit = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "HEAD"], capture_output=True, text=True)
-            if commit.returncode:
-                self.fail(f"{entry['name']}: cannot resolve local repository commit")
-            elif commit.stdout.strip() != entry["commit"]:
-                self.fail(f"{entry['name']}: local commit does not match registry commit")
         self.validate_manifest(plugin_dir, entry)
 
 
@@ -496,7 +497,7 @@ def main() -> int:
     entries = validator.validate_registry(registry) if registry is not None else []
     if not arguments.offline:
         for entry in entries:
-            if arguments.local_repository == entry["repo"]:
+            if arguments.local_repository == entry["repo"] and entry["ref"] == "main":
                 validator.validate_local_entry(entry)
             else:
                 validator.validate_remote_entry(entry)

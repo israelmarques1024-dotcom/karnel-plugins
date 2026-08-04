@@ -30,7 +30,7 @@
       "type": "string",
       "minLength": 1,
       "maxLength": 160,
-      "pattern": "^[^\\u0000-\\u001F\\u007F]+$"
+      "pattern": "^[^\\u0000-\\u001F\\u007F\\u0080-\\u009F]+$"
     },
     "commands": {
       "type": "array",

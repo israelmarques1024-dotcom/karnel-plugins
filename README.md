@@ -120,7 +120,9 @@ Uma entrada aprovada declara fonte, ref, metadados e integridade do manifest:
 
 `path` permite manter um plugin em subdiretório de um repositório revisado.
 `commit` opcional fixa um SHA Git completo; quando presente, o cliente e a CI o
-comparam ao commit obtido. O cliente sempre registra repo, ref, commit e versão
+comparam ao commit obtido. Entradas hospedadas neste próprio registry que usam
+o ref mutável `main` não podem declarar `commit`; use uma tag imutável para
+fixar uma revisão. O cliente sempre registra repo, ref, commit e versão
 instalada em metadados locais.
 
 O plugin oficial mínimo [`karnel-hello`](plugins/karnel-hello) exercita o fluxo
