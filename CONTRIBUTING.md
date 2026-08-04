@@ -82,7 +82,7 @@ Exemplo:
 
 `repo` deve ser exatamente `owner/repo`. Não use URLs, `.git`, caminhos
 absolutos, `..` ou refs com caracteres especiais. A CI exige nomes e repositórios
-únicos, source acessível, manifesto idêntico aos metadados, licença e arquivos
+únicos, combinações `repo`/`path` únicas, source acessível, manifesto idêntico aos metadados, licença e arquivos
 de comando exatos.
 
 ## Revisão

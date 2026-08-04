@@ -398,11 +398,11 @@ class Validator:
         entries = [self.validate_entry(entry, index) for index, entry in enumerate(registry["plugins"])]
         valid_entries = [entry for entry in entries if entry is not None]
         names = [entry["name"] for entry in valid_entries]
-        repos = [entry["repo"] for entry in valid_entries]
+        repository_paths = [(entry["repo"], entry.get("path", ".")) for entry in valid_entries]
         if len(names) != len(set(names)):
             self.fail("registry: plugin names must be unique")
-        if len(repos) != len(set(repos)):
-            self.fail("registry: plugin repositories must be unique")
+        if len(repository_paths) != len(set(repository_paths)):
+            self.fail("registry: plugin repository paths must be unique")
         command_owners: dict[str, str] = {}
         native_commands = self.native_commands | {"karnel"}
         for entry in valid_entries:

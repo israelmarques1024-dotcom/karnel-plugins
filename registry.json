@@ -16,6 +16,23 @@
       "license": "MIT",
       "checksum": "sha256:7b50c4e164cf2020ac4e6c914b887a5ffc06351b0668b6ae3cf14d22bbfd0e15",
       "capabilities": []
+    },
+    {
+      "name": "karnel-env-paths",
+      "repo": "israelmarques1024-dotcom/karnel-plugins",
+      "ref": "main",
+      "path": "plugins/karnel-env-paths",
+      "version": "1.0.0",
+      "description": "Display active Karnel paths and runtime version for diagnostics.",
+      "commands": [
+        "karnel-env-paths"
+      ],
+      "minKarnelVersion": "4.13.7",
+      "license": "MIT",
+      "checksum": "sha256:95a5e2b8b4cf8ab6f5e5acb5df2d115e73087830ad5ff7a2e2abb734956aed25",
+      "capabilities": [
+        "environment"
+      ]
     }
   ]
 }
