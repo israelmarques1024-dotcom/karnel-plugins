@@ -20,7 +20,8 @@
     {
       "name": "karnel-env-paths",
       "repo": "israelmarques1024-dotcom/karnel-env-paths",
-      "ref": "main",
+      "ref": "v1.0.0",
+      "commit": "702f880af88efbb4ed8417fcd02edb1093df26b5",
       "version": "1.0.0",
       "description": "Display active Karnel paths and runtime version for diagnostics.",
       "commands": [

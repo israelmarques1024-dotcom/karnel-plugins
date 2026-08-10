@@ -18,6 +18,7 @@ Karnel. Ela não é uma certificação de segurança nem cria isolamento.
 - Toda mudança de código exige nova versão SemVer, checksum e revisão.
 - Prefira `commit` completo para fixar uma revisão imutável quando o fluxo de publicação permitir.
 - `ref` mutável só é aceito quando o checksum no registry protege os comandos aprovados.
+- Uma mudança aprovada no registry requer uma release do Karnel para se tornar parte do snapshot confiado pelos clientes.
 - Remoções urgentes ou revogações devem ser registradas em PR revisado e comunicadas em advisory de segurança quando necessário.
 
 ## Governança Recomendada

@@ -46,6 +46,7 @@ as permissões do usuário atual e **não possuem sandbox real**.
 
 - Entradas deste registry são revisadas e validadas pela CI antes de aparecerem em `search`.
 - O cliente clona em staging, valida schema, licença, comandos, compatibilidade, checksum e colisões, e só então ativa o plugin com uma troca atômica.
+- Cada release do Karnel fixa e verifica um snapshot deste registry. Uma alteração aqui só chega aos clientes após uma release do Karnel que inclua esse snapshot.
 - Atualizações clonam uma cópia nova e validam tudo outra vez. O cliente não usa `git pull`, portanto não cria merges inesperados.
 - Repositórios arbitrários só são permitidos com `--unsafe` e confirmação. Essa opção não transforma o código em seguro.
 - `capabilities` são declarações informativas para revisão. Bash não oferece isolamento de rede, filesystem, processos ou ambiente.
